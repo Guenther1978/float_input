@@ -1,0 +1,8 @@
+[package]
+name = "float_input"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+nalgebra = "0.33.2"
+lstsq = "0.6.0"

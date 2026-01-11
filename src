@@ -1,0 +1,52 @@
+use std::io;
+use nalgebra::{OVector, OMatrix, Vector3, Vector6, U2, U3, U6, Matrix2x3}; // 0.33.2
+use lstsq;
+
+fn main() {
+    let mut buffer = String::new();
+    let mut x_v3 = Vector6::new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0); 
+    let mut x: OVector<f32, U6> = x_v3;
+    let mut y_v3 = Vector3::new(0.0, 0.0, 0.0); 
+    let mut y: OVector<f32, U3> = y_v3;
+    for i in 0..3 {
+        buffer.clear();
+        println!("x: ");
+        match io::stdin().read_line(&mut buffer) {
+            Ok(num) => {
+                let buffer = buffer.trim();
+                match buffer.parse::<f32>() {
+                    Ok(num) => {
+		        x[i] = num;
+			x[i + 3] = 1.0;
+			}
+                    Err(e) => println!("Error {}", e),
+                }
+            },
+            Err(e) => println!("Error {}", e),
+        } 
+
+        buffer.clear();
+        println!("y: ");
+        match io::stdin().read_line(&mut buffer) {
+            Ok(num) => {
+                let buffer = buffer.trim();
+                match buffer.parse::<f32>() {
+                    Ok(num) => y[i] = num,
+                    Err(e) => println!("Error {}", e),
+                }
+            },
+            Err(e) => println!("Error {}", e),
+        }
+    }
+
+    let m: OMatrix<f32, U3, U2> = x.reshape_generic(U3, U2);
+    
+    println!("x = {}", x);
+    println!("y = {}", y);
+    println!("m = {}", m);
+
+    let epsilon = 1e-14;
+    let result = lstsq::lstsq(&m, &y, epsilon).unwrap();
+
+    println!("a = {}, b = {}", result.solution[0], result.solution[1])
+}
